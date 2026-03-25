@@ -33,9 +33,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    volumes:
-      - ./backend-master:/app
-      - /app/node_modules
 
   frontend:
     build:
@@ -51,10 +48,6 @@ services:
       - PORT=3003
     depends_on:
       - backend
-    volumes:
-      - ./frontend-master:/app
-      - /app/node_modules
-      - /app/.next
 
 volumes:
   db_data:
