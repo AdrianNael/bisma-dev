@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" style="margin:0; padding:0;">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* Puppeteer PDF Generation - Modern CSS with fixed header/footer */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', serif;
+      font-size: 16px;
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
+
+    /* Main Content - tidak terpotong */
+    main.page-content {
+      padding: 0mm 10mm 5mm 10mm;
+      /* top right bottom left */
+      min-height: auto;
+    }
+
+    /* Table styling */
+    table {
+      page-break-inside: auto;
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+      margin: 3mm 0 5mm 0;
+    }
+
+    @media print {
+      thead {
+        display: table-row-group;
+      }
+    }
+
+    tr {
+      page-break-inside: avoid !important;
+    }
+
+    th,
+    td {
+      border: 0.5px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #b5c5e7;
+      font-weight: bold;
+    }
+
+    .signature-container {
+      margin-top: 8mm;
+      page-break-inside: avoid !important;
+      min-height: 80mm;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-content">
+    <!-- Header is provided by Puppeteer headerTemplate; removed from template -->
+
+    <% if (result.data.length==0) { %>
+      <div style="text-align:center">
+        <h2>Data Not Found!</h2>
+      </div>
+    <% } else { %>
+      <div style="font-family:'Times New Roman'; line-height:1; font-weight:bold; margin-bottom:2m;">
+        <p style="margin:2mm 0;">Nama&emsp;: <%= result.student ? result.student.nama : (result.data[0] ? result.data[0].nama : '-') %></p>
+        <p style="margin:2mm 0;">NIM&emsp;&nbsp;: <%= result.student ? result.student.NIM : (result.data[0] ? result.data[0].NIM : '-') %></p>
+        <p style="margin:2mm 0;">Prodi&emsp;: <%= result.student ? result.student.departemen : (result.data[0] ? result.data[0].departemen : '-') %></p>
+      </div>
+
+      <% function formatDMY(dateStr){ if(!dateStr) return '-'; var d=new Date(dateStr); if(isNaN(d)) return dateStr; var dd=('0'+d.getDate()).slice(-2); var mm=('0'+(d.getMonth()+1)).slice(-2); var yy=String(d.getFullYear()).slice(-2); return dd+'/'+mm+'/'+yy; } %>
+
+      <table cellspacing="0" cellpadding="8">
+        <thead>
+          <tr>
+            <th style="background-color:#b5c5e7; width:5%">No.</th>
+            <th style="background-color:#b5c5e7; width:18%">Tanggal</th>
+            <th style="background-color:#b5c5e7; width:18%">Kegiatan</th>
+            <th style="background-color:#b5c5e7; width:44%"><%= kategoriId===8 ? 'Link Output Audio' : 'Hasil Desain' %></th>
+            <th style="background-color:#b5c5e7; width:15%">Jumlah Insentif</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% function safeNumber(v){ v=v||0; var n=Number(v); return isNaN(n)?0:n; } var rowNumber=0; var sumInsentif=0; for (var i=0; i < result.data.length; i++) { var data=result.data[i]; rowNumber++; var imgSrc=null; if (Array.isArray(data.url_file_sp3) && data.url_file_sp3.length) { imgSrc=data.url_file_sp3[0]; } else if (Array.isArray(data.link_output) && data.link_output.length) { imgSrc=data.link_output[0]; } else if (typeof data.link_output==='string' && data.link_output) { imgSrc=data.link_output; } var rowInsentif=safeNumber(data.jumlah_insentif); sumInsentif+=rowInsentif; %>
+          <tr>
+            <td style="vertical-align: middle; text-align:center;"><%= rowNumber %></td>
+            <td style="vertical-align: middle; text-align:center;"><%= formatDMY(data.tanggal) %></td>
+            <td style="vertical-align: middle; text-align:center;"><%= data.kegiatan || data.kategori_magang || '-' %></td>
+            <td style="vertical-align: top; text-align:center;">
+              <% if (kategoriId===8) { %>
+                <% if (imgSrc) { %>
+                  <div style="text-align:left;"><%= imgSrc %></div>
+                <% } else { %>
+                  <div style="text-align:left;"><%= data.deskripsi || '-' %></div>
+                <% } %>
+              <% } else { %>
+                <% if (imgSrc) { %>
+                  <img src="<%= imgSrc %>" alt="hasil" style="max-width:30%; height:auto; display:block; margin:0 auto;" />
+                  <div style="text-align:center; margin-top:6px;"><%= data.deskripsi || data.kegiatan || '' %></div>
+                <% } else { %>
+                  <div style="text-align:left;"><%= data.deskripsi || '-' %></div>
+                <% } %>
+              <% } %>
+            </td>
+            <td style="vertical-align: middle; text-align:center; padding-right:8px;"><%= (rowInsentif || 0).toLocaleString('id-ID') ? ('Rp. ' + (rowInsentif || 0).toLocaleString('id-ID')) : 'Rp. 0' %></td>
+          </tr>
+          <% } %>
+          <tr style="border-top: 1px solid #000; background-color: transparent; font-weight:bold;">
+            <td colspan="3" style="text-align:center;">TOTAL</td>
+            <td style="text-align:center;"><%= (result && Array.isArray(result.data)) ? (result.data.length + (kategoriId===8 ? ' Audio' : ' Desain')) : ('0' + (kategoriId===8 ? ' Audio' : ' Desain')) %></td>
+            <td style="text-align:center; padding-right:8px;">Rp. <%= (sumInsentif || 0).toLocaleString('id-ID') %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Signature Section -->
+      <div class="signature-container" style="display: flex; justify-content: space-between; padding: 6mm 5mm;">
+        <!-- Left Signature (Penanggungjawab) -->
+        <div style="width: 45%; text-align: center;">
+          <p style="margin: 0 0 2mm 0; font-size: 16px; font-weight: bold;">Penanggungjawab,</p>
+          <p style="margin: 0 0 3mm 0; font-size: 16px; font-weight: bold;"><%= jabatan || 'Dosen Pembimbing' %></p>
+
+          <% if (result.signatures && result.signatures.lecturer) { %>
+            <div style="height: 70px; display: flex; align-items: center; justify-content: center; margin-top: 5mm; margin-bottom: 5mm;">
+              <img src="<%= result.signatures.lecturer %>" alt="Lecturer Signature" style="max-height: 100px; max-width: 250px;" />
+            </div>
+          <% } else { %>
+            <div style="height: 100px; border: 1px dashed #999; display: flex; align-items: center; justify-content: center; margin: 0 auto 5mm auto; width: 250px; color: #999; font-weight: bold;">
+              (Tanda Tangan)
+            </div>
+          <% } %>
+
+          <p style="margin: 0; font-weight: bold; font-size: 16px;"><%= (result.lecturer && result.lecturer.nama) ? result.lecturer.nama : '-' %></p>
+          <% var lecturerId=(result.lecturer && result.lecturer.id) ? result.lecturer.id : null; var lecturerStatus=(result.lecturer && result.lecturer.status) ? result.lecturer.status : null; %>
+          <% if (lecturerStatus==='STAF' && lecturerId) { %>
+            <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">NIP. <%= lecturerId %></p>
+          <% } else if (lecturerId) { %>
+            <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;"><%= lecturerId %></p>
+          <% } %>
+        </div>
+
+        <!-- Right Signature (Mahasiswa) -->
+        <div style="width: 45%; text-align: center;">
+          <p style="margin: 0 0 2mm 0; font-size: 16px; font-weight: bold;">Mahasiswa,</p>
+          <p style="margin: 0 0 3mm 0; font-size: 16px; font-weight: bold;">&nbsp;</p>
+
+          <% if (result.signatures && result.signatures.student) { %>
+            <div style="height:70px; margin-top: 5mm; display: flex; align-items: center; justify-content: center; margin-bottom: 5mm;">
+              <img src="<%= result.signatures.student %>" alt="Student Signature" style="max-height: 100px; max-width: 250px;" />
+            </div>
+          <% } else { %>
+            <div style="height: 100px; border: 1px dashed #999; display: flex; align-items: center; justify-content: center; margin: 0 auto 5mm auto; width: 250px; color: #999; font-weight: bold;">
+              (Tanda Tangan)
+            </div>
+          <% } %>
+
+          <p style="margin: 0; font-weight: bold; font-size: 16px;"><%= result.student ? result.student.nama : (result.data[0] ? result.data[0].nama : '-') %></p>
+          <% var studentNim=result.student ? result.student.NIM : (result.data[0] ? result.data[0].NIM : null); %>
+          <% if (studentNim) { %>
+            <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">NIM. <%= studentNim %></p>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+  </main>
+</body>
+
+</html>

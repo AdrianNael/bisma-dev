@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rekapitulasi Project Saya <%= year %>
+    </title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 10mm 10mm 15mm 10mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 11px;
+            color: #000000;
+        }
+
+        .page-wrapper {
+            width: 100%;
+        }
+
+        .page-container {
+            width: 100%;
+            padding: 5mm;
+        }
+
+        .form-title {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 6mm 0;
+            line-height: 1.4;
+            font-family: 'Times New Roman', Times, serif;
+            color: #000000;
+        }
+
+        .user-info {
+            margin-bottom: 6mm;
+            font-size: 12px;
+            color: #000000;
+        }
+
+        .user-info table {
+            border-collapse: collapse;
+        }
+
+        .user-info td {
+            padding: 2mm 3mm;
+            vertical-align: top;
+        }
+
+        .user-info .label {
+            font-weight: bold;
+            width: 120px;
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-bottom: 6mm;
+            font-family: 'Times New Roman', Times, serif;
+            border: 2px solid #000000;
+        }
+
+        table.data-table th,
+        table.data-table td {
+            border: 1px solid #000000;
+            padding: 2mm 2mm;
+            text-align: center;
+            vertical-align: middle;
+            color: #000000;
+        }
+
+        table.data-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            font-size: 10px;
+            line-height: 1.2;
+        }
+
+        table.data-table .col-no {
+            width: 25px;
+        }
+
+        table.data-table .col-nama-mhs {
+            width: 140px;
+        }
+
+        table.data-table .col-nim {
+            width: 80px;
+        }
+
+        table.data-table .col-prodi {
+            width: 100px;
+        }
+
+        table.data-table .col-jenis {
+            width: 100px;
+        }
+
+        table.data-table .col-nama-proj {
+            width: 150px;
+        }
+
+        table.data-table .col-durasi {
+            width: 70px;
+        }
+
+        table.data-table .col-insentif {
+            width: 80px;
+        }
+
+        table.data-table .col-date {
+            width: 70px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <% if (data.error) { %>
+            <div class="page-container">
+                <h3 style="text-align: center; margin-top: 50mm; color: #000000;"><i>
+                        <%= data.error %>
+                    </i></h3>
+            </div>
+            <% } else if (data.projects && data.projects.length> 0) { %>
+                <% var allRows=[]; var uniqueProjectNames={}; for (var i=0; i < data.projects.length; i++) { var
+                    project=data.projects[i]; uniqueProjectNames[project.nama]=true; if (project.mahasiswa &&
+                    project.mahasiswa.length> 0) {
+                    for (var j = 0; j < project.mahasiswa.length; j++) { var mhs=project.mahasiswa[j]; allRows.push({
+                        nama_mhs: mhs.nama, nim: mhs.nim || '-' , prodi: mhs.jurusan || '-' , jenis_project:
+                        project.jenis, nama_project: project.nama, durasi: mhs.durasi + ' ' + project.satuan, insentif:
+                        mhs.insentif, tgl_mulai: project.tanggal_mulai, tgl_selesai: project.tanggal_selesai }); } }
+                        else { allRows.push({ nama_mhs: '-' , nim: '-' , prodi: '-' , jenis_project: project.jenis,
+                        nama_project: project.nama, durasi: project.durasi + ' ' + project.satuan, insentif:
+                        project.insentif, tgl_mulai: project.tanggal_mulai, tgl_selesai: project.tanggal_selesai }); } }
+                        var totalProject=Object.keys(uniqueProjectNames).length; %>
+                        <div class="page-container">
+                            <div class="form-title">
+                                REKAPITULASI PROJECT TAHUN <%= year %>
+                            </div>
+
+                            <div class="user-info">
+                                <table>
+                                    <tr>
+                                        <td class="label">Nama</td>
+                                        <td>:</td>
+                                        <td>
+                                            <%= data.user.nama %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">NIP</td>
+                                        <td>:</td>
+                                        <td>
+                                            <%= data.user.nip %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Jurusan</td>
+                                        <td>:</td>
+                                        <td>
+                                            <%= data.user.jurusan || '-' %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="label">Total Project</td>
+                                        <td>:</td>
+                                        <td>
+                                            <%= totalProject %>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-no">No</th>
+                                        <th class="col-nama-mhs">Nama Mahasiswa</th>
+                                        <th class="col-nim">NIM</th>
+                                        <th class="col-prodi">Prodi</th>
+                                        <th class="col-jenis">Jenis Project</th>
+                                        <th class="col-nama-proj">Nama Project</th>
+                                        <th class="col-durasi">Durasi/Karya</th>
+                                        <th class="col-insentif">Insentif</th>
+                                        <th class="col-date">Tgl. Mulai</th>
+                                        <th class="col-date">Tgl. Selesai</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (var k=0; k < allRows.length; k++) { var row=allRows[k]; %>
+                                        <tr>
+                                            <td class="col-no">
+                                                <%= k + 1 %>
+                                            </td>
+                                            <td class="col-nama-mhs">
+                                                <%= row.nama_mhs %>
+                                            </td>
+                                            <td class="col-nim">
+                                                <%= row.nim %>
+                                            </td>
+                                            <td class="col-prodi">
+                                                <%= row.prodi %>
+                                            </td>
+                                            <td class="col-jenis">
+                                                <%= row.jenis_project %>
+                                            </td>
+                                            <td class="col-nama-proj">
+                                                <%= row.nama_project %>
+                                            </td>
+                                            <td class="col-durasi">
+                                                <%= row.durasi %>
+                                            </td>
+                                            <td class="col-insentif">
+                                                Rp. <%= row.insentif.toLocaleString('id-ID') %>
+                                            </td>
+                                            <td class="col-date">
+                                                <%= row.tgl_mulai %>
+                                            </td>
+                                            <td class="col-date">
+                                                <%= row.tgl_selesai %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } else { %>
+                            <div class="page-container">
+                                <h2 style="text-align: center; margin-top: 50mm; color: #000000;"><i>TIDAK ADA PROJECT
+                                        YANG SELESAI DI TAHUN <%= year %></i></h2>
+                            </div>
+                            <% } %>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" style="margin:0; padding:0;">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* Puppeteer PDF Generation - Modern CSS with fixed header/footer */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', serif;
+      font-size: 16px;
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
+
+    /* Main Content - tidak terpotong */
+    main.page-content {
+      padding: 5mm 10mm 5mm 10mm;
+      /* top right bottom left: kiri 10mm, kanan 5mm */
+      min-height: auto;
+    }
+
+    /* Table styling */
+    table {
+      page-break-inside: auto;
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+      margin: 3mm 0 5mm 0;
+      /* Top margin lebih besar untuk jarak dari info mahasiswa */
+    }
+
+    @media print {
+      thead {
+        display: table-row-group;
+      }
+    }
+
+    tr {
+      page-break-inside: avoid !important;
+    }
+
+    th,
+    td {
+      border: 0.5px solid #000;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #b5c5e7;
+      font-weight: bold;
+    }
+
+    /* Column width adjustments - sesuai screenshot */
+    table td:nth-child(1),
+    table th:nth-child(1) {
+      width: 4%;
+    }
+
+    /* No */
+    table td:nth-child(2),
+    table th:nth-child(2) {
+      width: 8%;
+    }
+
+    /* Tanggal */
+    table td:nth-child(3),
+    table th:nth-child(3) {
+      width: 10%;
+    }
+
+    /* Kategori Kegiatan */
+    table td:nth-child(4),
+    table th:nth-child(4) {
+      width: 34%;
+    }
+
+    /* Rincian Kegiatan - TERBESAR */
+    table td:nth-child(5),
+    table th:nth-child(5) {
+      width: 8%;
+    }
+
+    /* Waktu Mulai */
+    table td:nth-child(6),
+    table th:nth-child(6) {
+      width: 8%;
+    }
+
+    /* Waktu Selesai */
+    table td:nth-child(7),
+    table th:nth-child(7) {
+      width: 7%;
+    }
+
+    /* Jumlah Jam Kerja */
+    table td:nth-child(8),
+    table th:nth-child(8) {
+      width: 20%;
+    }
+
+    /* Tautan Dokumen Output */
+
+    /* Signature area styling - will flow naturally after table */
+    .signature-container {
+      margin-top: 5mm;
+      page-break-inside: avoid !important;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-content">
+    <!-- Header (renders once as part of document content -> appears only on first page) -->
+
+
+    <% if (result.data.length==0) { %>
+      <div style="text-align:center">
+        <h2>Data Not Found!</h2>
+      </div>
+      <% } else { %>
+        <div style="font-family:'Times New Roman'; line-height:1; font-weight:bold; margin-bottom:2m;">
+          <p style="margin:2mm 0;">Nama&emsp;: <%= result.student ? result.student.nama : (result.data[0] ?
+              result.data[0].nama : '-' ) %>
+          </p>
+          <p style="margin:2mm 0;">NIM&emsp;&nbsp;: <%= result.student ? result.student.NIM : (result.data[0] ?
+              result.data[0].NIM : '-' ) %>
+          </p>
+          <p style="margin:2mm 0;">Prodi&emsp;: <%= result.student ? result.student.departemen : (result.data[0] ?
+              result.data[0].departemen : '-' ) %>
+          </p>
+        </div>
+
+        <% /* Helper to format date to dd/mm/yy */ %>
+          <% function formatDMY(dateStr){ if(!dateStr) return '-' ; const d=new Date(dateStr); if(isNaN(d)) return
+            dateStr; const dd=('0'+d.getDate()).slice(-2); const mm=('0'+(d.getMonth()+1)).slice(-2); const
+            yy=String(d.getFullYear()).slice(-2); return dd+'/'+mm+'/'+yy; } %>
+
+          <% /* Helper to format numbers: show integer when .00, otherwise two decimals (comma as separator) */ %>
+          <% function formatNumber(v){ if(v===null||v===undefined||v==='') return '-'; const n=Number(v); if(isNaN(n)) return v; const fixed=n.toFixed(2); if(fixed.endsWith('.00')) return String(Math.round(n)); return fixed.replace('.', ','); } %>
+
+            <table cellspacing="0" cellpadding="8">
+              <thead>
+                <tr>
+                  <% for (let index=0; index < result.headers.length; index++) { %>
+                    <th style="background-color:#b5c5e7">
+                      <%= result.headers[index] %>
+                    </th>
+                    <% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <% let parts=result.masterMonth.startMonth.split(" "); %>
+            <% 
+              function weekOfMonth(dateStr) {
+                const d = new Date(dateStr);
+                if (isNaN(d)) return 0;
+                const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
+                const dayOfWeek = firstDay.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+                const day = d.getDate();
+                // Calculate which week this date falls into (1-based)
+                // Week 1 starts on the first day of the month
+                return Math.ceil((day + dayOfWeek) / 7);
+              }
+
+              let currentWeek = null;
+              let weekTotal = 0;
+              let rowNumber = 0;
+              for (let i = 0; i < result.data.length; i++) {
+                const data = result.data[i];
+                rowNumber++;
+                const w = weekOfMonth(data.tanggal);
+                if (currentWeek === null) currentWeek = w;  
+                // Only update currentWeek without printing subtotal here
+                // Subtotal is printed after each row when next week differs (lines below)
+            %>
+                    <tr>
+                      <td>
+                        <%= rowNumber %>
+                      </td>
+                      <td>
+                        <%= formatDMY(data.tanggal) %>
+                      </td>
+                      <td>
+                        <%= data.kegiatan %>
+                      </td>
+                      <td style=" text-align:left;">
+                  <%= data.deskripsi %>
+                    </td>
+                    <td>
+                      <%= data.jam_mulai %>
+                    </td>
+                    <td>
+                      <%= data.jam_selesai %>
+                    </td>
+                    <td>
+                      <%= formatNumber(Number(data.jam_kerja || 0)) %>
+                    </td>
+                    <td>
+                      <%= data.link_output %>
+                    </td>
+                    </tr>
+                    <% weekTotal +=Number(data.jam_kerja || 0); const next=result.data[i+1]; const nextWeek=next ?
+                      weekOfMonth(next.tanggal) : null; if (nextWeek !==currentWeek) { %>
+                      <tr style="background-color: #ffffff; font-weight:bold;">
+                        <td colspan="<%= result.headers.length - 2 %>" style="text-align:center;">Subtotal Jam Kerja
+                          Minggu Ke-<%= currentWeek %>
+                        </td>
+                        <td>
+                            <%= formatNumber(weekTotal) %>
+                          </td>
+                        <td></td>
+                      </tr>
+                      <% weekTotal=0; currentWeek=nextWeek; } } %>
+                        <tr style="border-top: 1px solid #000;">
+                          <td colspan="<%= result.headers.length - 2 %>"
+                            style="text-align:center; font-weight: bold; background-color: transparent;">Grand Total Jam
+                          </td>
+                          <td style="font-weight: bold; background-color: transparent;">
+                            <%= formatNumber(result.total.jam) %>
+                          </td>
+                          <td style="background-color: transparent;"></td>
+                        </tr>
+              </tbody>
+            </table>
+
+            <!-- Signature Section - will flow naturally after table -->
+            <div class="signature-container" style="display: flex; justify-content: space-between; padding: 0 5mm;">
+              <!-- Left Signature (Penanggungjawab) -->
+              <div style="width: 45%; text-align: center;">
+                <p style="margin: 0 0 2mm 0; font-size: 16px; font-weight: bold;">Penanggungjawab,</p>
+                <p style="margin: 0 0 3mm 0; font-size: 16px; font-weight: bold;">
+                  <%= jabatan || 'Dosen Pembimbing' %>
+                </p>
+
+                <% if (result.signatures && result.signatures.lecturer) { %>
+                  <div
+                    style="height: 70px; display: flex; align-items: center; justify-content: center; margin-top: 5mm; margin-bottom: 5mm;">
+                    <img src="<%= result.signatures.lecturer %>" alt="Lecturer Signature"
+                      style="max-height: 100px; max-width: 250px;" />
+                  </div>
+                  <% } else { %>
+                    <div
+                      style="height: 100px; border: 1px dashed #999; display: flex; align-items: center; justify-content: center; margin: 0 auto 5mm auto; width: 250px; color: #999; font-weight: bold;">
+                      (Tanda Tangan)
+                    </div>
+                    <% } %>
+
+                      <p style="margin: 0; font-weight: bold; font-size: 16px;">
+                        <%= (result.lecturer && result.lecturer.nama) ? result.lecturer.nama : '-' %>
+                      </p>
+                      <% const lecturerId=(result.lecturer && result.lecturer.id) ? result.lecturer.id : null; const
+                        lecturerStatus=(result.lecturer && result.lecturer.status) ? result.lecturer.status : null; %>
+                        <% if (lecturerStatus==='STAF' && lecturerId) { %>
+                          <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">NIP. <%= lecturerId %>
+                          </p>
+                          <% } else if (lecturerId) { %>
+                            <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">
+                              <%= lecturerId %>
+                            </p>
+                            <% } %>
+              </div>
+
+              <!-- Right Signature (Mahasiswa) -->
+              <div style="width: 45%; text-align: center;">
+                <p style="margin: 0 0 2mm 0; font-size: 16px; font-weight: bold;">Mahasiswa,</p>
+                <p style="margin: 0 0 3mm 0; font-size: 16px; font-weight: bold;">&nbsp;</p>
+
+                <% if (result.signatures && result.signatures.student) { %>
+                  <div
+                    style="height:70px; margin-top: 5mm;display: flex; align-items: center; justify-content: center; margin-bottom: 5mm;">
+                    <img src="<%= result.signatures.student %>" alt="Student Signature"
+                      style="max-height: 100px; max-width: 250px;" />
+                  </div>
+                  <% } else { %>
+                    <div
+                      style="height: 100px; border: 1px dashed #999; display: flex; align-items: center; justify-content: center; margin: 0 auto 5mm auto; width: 250px; color: #999; font-weight: bold;">
+                      (Tanda Tangan)
+                    </div>
+                    <% } %>
+
+                      <p style="margin: 0; font-weight: bold; font-size: 16px;">
+                        <%= result.student ? result.student.nama : (result.data[0] ? result.data[0].nama : '-' ) %>
+                      </p>
+                      <% const studentNim=result.student ? result.student.NIM : (result.data[0] ? result.data[0].NIM :
+                        null); %>
+                        <% if (studentNim) { %>
+                          <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">NIM. <%= studentNim %>
+                          </p>
+                          <% } %>
+              </div>
+            </div>
+            <% } %>
+  </main>
+</body>
+
+</html>

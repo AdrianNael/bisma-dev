@@ -1,0 +1,32 @@
+/* src/styles/custom-sidebar.css */
+
+.active-link-final {
+  position: relative;
+  z-index: 20; /* Penting: Pastikan z-index lebih tinggi dari pseudo-elemen */
+}
+
+/* Pseudo-elemen untuk lekukan atas */
+.active-link-final::before {
+  content: "";
+  position: absolute;
+  top: -24px;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background-color: #1e2a38; /* Warna background sidebar */
+  border-bottom-right-radius: 9999px;
+  z-index: 10; /* Pastikan di bawah link aktif */
+}
+
+/* Pseudo-elemen untuk lekukan bawah */
+.active-link-final::after {
+  content: "";
+  position: absolute;
+  bottom: -24px;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background-color: #1e2a38; /* Warna background sidebar */
+  border-top-right-radius: 9999px;
+  z-index: 10; /* Pastikan di bawah link aktif */
+}

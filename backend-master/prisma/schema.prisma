@@ -1,0 +1,344 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  username      String         @id @unique @db.VarChar(100)
+  password      String         @db.VarChar(100)
+  name          String         @db.VarChar(100)
+  refresh_token String?        @db.VarChar(512)
+  tmst_pengguna tmst_pengguna?
+
+  @@map("users")
+}
+
+model tmst_kategori_magang {
+  id                    Int            @id @default(autoincrement())
+  kategori              String         @db.VarChar(255)
+  kategori_tmst_project tmst_project[]
+  tran_insentif         tran_insentif?
+
+  @@map("tmst_kategori_magang")
+}
+
+model tran_insentif {
+  id                   Int                  @id @default(autoincrement())
+  id_kategori          Int                  @unique
+  id_satuan            Int
+  besaran_insentif     Int
+  durasi_satuan        Int?
+  tmst_kategori_magang tmst_kategori_magang @relation(fields: [id_kategori], references: [id])
+  tmst_satuan_insentif tmst_satuan_insentif @relation(fields: [id_satuan], references: [id])
+
+  @@index([id_satuan], map: "tran_insentif_id_satuan_fkey")
+  @@map("tran_insentif")
+}
+
+model tmst_satuan_insentif {
+  id            Int             @id @default(autoincrement())
+  satuan        String          @db.VarChar(50)
+  tran_insentif tran_insentif[]
+
+  @@map("tmst_satuan_insentif")
+}
+
+model tmst_project {
+  id                    Int             @id @default(autoincrement())
+  id_kategori           Int
+  nama                  String          @db.VarChar(255)
+  pic                   String          @db.VarChar(50)
+  tanggal_mulai         DateTime?       @db.Date
+  tanggal_selesai       DateTime?       @db.Date
+  inisial_project       String          @db.VarChar(5)
+  remark_project        String?         @db.VarChar(512)
+  created_by            String          @db.VarChar(50)
+  kriteria              String?         @db.Text
+  kuota                 Int?
+  tempat_magang         String?         @db.VarChar(255)
+  pic_jabatan           String?         @db.VarChar(255)
+  pendaftaran_mulai     DateTime?       @db.Date
+  pendaftaran_selesai   DateTime?       @db.Date
+  id_status             Int             @default(1)
+  durasi_default        Int?            @default(0)
+  is_deleted            Boolean         @default(false)
+  project_group_id      Int?            // Links split cross-year projects together
+
+  tmst_kategori_magang  tmst_kategori_magang      @relation(fields: [id_kategori], references: [id])
+  tmst_pengguna         tmst_pengguna             @relation("pic_relation", fields: [pic], references: [id])
+  created_user          tmst_pengguna             @relation("created_by_relation", fields: [created_by], references: [id])
+  tran_project          tran_project[]
+  tran_payment          tran_payment[]
+  job_applications      job_application[]
+  project_departments   tmst_project_department[]
+  project_faculties     tmst_project_faculty[]
+  tmst_status_master_project tmst_status_master_project @relation(fields: [id_status], references: [id])
+
+  @@index([project_group_id])
+  @@map("tmst_project")
+}
+
+model tran_project {
+  id                     Int                      @id @unique @default(autoincrement())
+  id_project             Int
+  estimasi               Int
+  id_peserta             String                   @db.VarChar(50)
+  durasi                 Int
+  id_status              Int
+  is_reviewed            Boolean                  @default(false) //untuk check is user already check preview timesheet
+  revisi                 String?                  @db.VarChar(255)
+  tmst_pengguna          tmst_pengguna            @relation(fields: [id_peserta], references: [id])
+  tmst_project           tmst_project             @relation(fields: [id_project], references: [id])
+  tran_timesheet         tran_timesheet[]
+  tmst_status_project    tmst_status_project      @relation(fields: [id_status], references: [id])
+  project_status_history project_status_history[]
+
+  @@unique([id_project, id_peserta])
+  @@map("tran_project")
+}
+
+model tmst_pengguna {
+  id                   String                 @id @unique @db.VarChar(20)
+  nama                 String                 @db.VarChar(225)
+  username             String                 @unique @db.VarChar(20)
+  departemen           String?                @db.VarChar(512)
+  no_telp              String?                @db.VarChar(20)
+  no_rekening          String?                @db.VarChar(30)
+  email                String?                @db.VarChar(255)
+  status               ROLE
+
+  job_applications     job_application[]
+  tran_posisi_pengguna tran_posisi_pengguna[]
+  tran_project         tran_project[]
+  tmst_project         tmst_project[]         @relation("pic_relation")
+  created_user         tmst_project[]         @relation("created_by_relation")
+  user                 user                   @relation(fields: [username], references: [username])
+  tmst_department      tmst_department?       @relation(fields: [departemen], references: [department])
+
+  @@map("tmst_pengguna")
+}
+
+model tran_posisi_pengguna {
+  id            Int           @id @default(autoincrement())
+  id_pengguna   String        @db.VarChar(50)
+  id_posisi     Int
+  tmst_pengguna tmst_pengguna @relation(fields: [id_pengguna], references: [id])
+  tmst_posisi   tmst_posisi   @relation(fields: [id_posisi], references: [id])
+
+  @@map("tran_posisi_pengguna")
+}
+
+model tmst_posisi {
+  id                   Int                    @id @default(autoincrement())
+  posisi               String                 @db.VarChar(512)
+  tran_posisi_pengguna tran_posisi_pengguna[]
+
+  @@map("tmst_posisi")
+}
+
+model tran_timesheet {
+  id                       Int                        @id @default(autoincrement())
+  id_kategori_kegiatan     Int
+  id_tran_project          Int
+  tanggal                  DateTime                   @db.Date
+  jam_mulai                DateTime                   @db.Time()
+  jam_selesai              DateTime                   @db.Time()
+  deskripsi                String                     @db.VarChar(500)
+  total_sesi               Float
+  link_output              String?                    @db.VarChar(500)
+  id_status                Int
+  tmst_kategori_kegiatan   tmst_kategori_kegiatan     @relation(fields: [id_kategori_kegiatan], references: [id])
+  tran_project             tran_project               @relation(fields: [id_tran_project], references: [id])
+  tmst_status_timesheet    tmst_status_timesheet      @relation(fields: [id_status], references: [id])
+  timesheet_status_history timesheet_status_history[]
+
+  @@index([id_kategori_kegiatan], map: "tran_timesheet_id_kategori_kegiatan_fkey")
+  @@map("tran_timesheet")
+}
+
+model tmst_status_timesheet {
+  id                       Int                        @id @default(autoincrement())
+  status                   String                     @db.VarChar(50)
+  deskripsi                String?                    @db.VarChar(255)
+  tran_timesheet           tran_timesheet[]
+  timesheet_status_history timesheet_status_history[]
+
+  @@map("tmst_status_timesheet")
+}
+
+model tmst_status_pembayaran {
+  id                     Int                      @id @default(autoincrement())
+  status                 String                   @db.VarChar(50)
+  deskripsi              String?                  @db.VarChar(255)
+  tran_payment           tran_payment[]
+  payment_status_history payment_status_history[]
+
+  @@map("tmst_status_pembayaran")
+}
+
+model tmst_kategori_kegiatan {
+  id             Int              @id @default(autoincrement())
+  kegiatan       String           @db.VarChar(50)
+  tran_timesheet tran_timesheet[]
+
+  @@map("tmst_kategori_kegiatan")
+}
+
+model tran_payment {
+  id                     Int                      @id @default(autoincrement())
+  id_tmst_project        Int
+  periode                String                   @db.VarChar(100)
+  total_tagihan          Int
+  url_file_sp3           String?                  @db.VarChar(255)
+  id_status              Int
+  revisi                 String?                  @db.VarChar(100)
+  tmst_status_pembayaran tmst_status_pembayaran   @relation(fields: [id_status], references: [id])
+  tmst_project           tmst_project             @relation(fields: [id_tmst_project], references: [id])
+  payment_status_history payment_status_history[]
+
+  @@unique([id_tmst_project, id_status, periode])
+  @@index([id_status], map: "tran_payment_id_status_fkey")
+  @@map("tran_payment")
+}
+
+model tmst_status_project {
+  id                     Int                      @id @default(autoincrement())
+  status                 String                   @db.VarChar(100)
+  deskripsi              String?                  @db.VarChar(255)
+  tran_project           tran_project[]
+  project_status_history project_status_history[]
+}
+
+model tmst_status_master_project {
+  id           Int            @id @default(autoincrement())
+  status       String         @db.VarChar(50)
+  deskripsi    String?        @db.VarChar(255)
+  tmst_project tmst_project[]
+
+  @@map("tmst_status_master_project")
+}
+
+model project_status_history {
+  id         Int      @id @default(autoincrement())
+  id_project Int
+  id_status  Int
+  changed_at DateTime @default(now())
+
+  tran_project        tran_project        @relation(fields: [id_project], references: [id])
+  tmst_status_project tmst_status_project @relation(fields: [id_status], references: [id])
+
+  @@unique([id_project, id_status])
+}
+
+model timesheet_status_history {
+  id           Int      @id @default(autoincrement())
+  id_timesheet Int
+  id_status    Int
+  changed_at   DateTime @default(now())
+
+  tran_timesheet        tran_timesheet        @relation(fields: [id_timesheet], references: [id])
+  tmst_status_timesheet tmst_status_timesheet @relation(fields: [id_status], references: [id])
+
+  @@unique([id_timesheet, id_status])
+}
+
+model payment_status_history {
+  id         Int      @id @default(autoincrement())
+  id_payment Int
+  id_status  Int
+  changed_at DateTime @default(now())
+
+  tran_payment           tran_payment           @relation(fields: [id_payment], references: [id])
+  tmst_status_pembayaran tmst_status_pembayaran @relation(fields: [id_status], references: [id])
+
+  @@unique([id_payment, id_status])
+}
+
+model tmst_faculty {
+  id                Int                    @id @default(autoincrement())
+  faculty           String                 @unique
+  departments       tmst_department[]
+  project_faculties tmst_project_faculty[]
+
+  @@map("tmst_faculty")
+}
+
+model tmst_department {
+  id         Int           @id @default(autoincrement())
+  department String
+  faculty_id Int?
+
+  faculty             tmst_faculty?           @relation(fields: [faculty_id], references: [id])
+  tmst_pengguna       tmst_pengguna[]
+  project_departments tmst_project_department[]
+
+  @@unique([department])
+  @@index([faculty_id])
+  @@map("tmst_department")
+}
+
+model job_application {
+  id                Int                @id @default(autoincrement())
+  master_project_id Int
+  mahasiswa_id      String             @db.VarChar(20)
+  tanggal_lamaran   DateTime           @default(now())
+  status            APPLICATION_STATUS @default(Pending)
+
+  project           tmst_project       @relation(fields: [master_project_id], references: [id])
+  mahasiswa         tmst_pengguna      @relation(fields: [mahasiswa_id], references: [id])
+  
+  @@map("job_applications")
+}
+
+model tmst_project_department {
+  id            Int             @id @default(autoincrement())
+  project_id    Int
+  department_id Int
+
+  project       tmst_project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  department    tmst_department @relation(fields: [department_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, department_id])
+  @@index([department_id])
+  @@map("tmst_project_department")
+}
+
+model tmst_project_faculty {
+  id         Int          @id @default(autoincrement())
+  project_id Int
+  faculty_id Int
+
+  project    tmst_project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  faculty    tmst_faculty @relation(fields: [faculty_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, faculty_id])
+  @@index([faculty_id])
+  @@map("tmst_project_faculty")
+}
+
+// Normalized status table for student timesheet submissions per project/period
+model tmst_status_student_timesheet {
+  id       Int                @id @default(autoincrement())
+  status   String             @unique @db.VarChar(50)  // "approved", "revision", "waiting"
+  deskripsi String?           @db.VarChar(255)
+
+  @@map("tmst_status_student_timesheet")
+}
+
+enum APPLICATION_STATUS {
+  Pending
+  Accepted
+  Rejected
+}
+
+enum ROLE {
+  STAF
+  MAHASISWA
+  MANAGER
+  DIRMAWA
+}
+

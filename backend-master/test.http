@@ -1,0 +1,671 @@
+POST http://localhost:8000/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "nip" : "105221025",
+  "username" : "r.kesh",
+  "password" : "rahasia",
+  "nama": "Rakesh Bramantyo",
+  "departemen": "Ilkom",
+  "status": "MAHASISWA"
+}
+
+
+
+
+###
+POST http://localhost:8000/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username" : "a.kash",
+  "password" : "rahasia"
+}
+
+
+
+
+
+###
+GET http://localhost:8000/user/get
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwNTIyMTAyMiIsInVzZXJuYW1lIjoiYS5rYXNoIiwicm9sZSI6IlNUQUYiLCJpYXQiOjE3MjI5MTMwNzYsImV4cCI6MTcyMjkxMzA5MX0.1AHtwns2sYQhTJqL51LKPDg2HrksCFPfUjk1vms2A1w
+
+
+###
+GET http://localhost:8000/token
+
+
+
+###
+DELETE http://localhost:8000/logout
+
+
+###
+PATCH http://localhost:8000/api/users/current
+Content-Type: application/json
+Accept: application/json
+Authorization: 19dfc22d-4545-45a9-9b36-ec0fc3fee291
+
+{
+  "name" : "Farhan Dwi"
+}
+
+
+
+
+
+###
+DELETE http://localhost:8000/api/users/logout
+Content-Type: application/json
+Accept: application/json
+Authorization: 19dfc22d-4545-45a9-9b36-ec0fc3fee291
+
+
+
+
+
+### CREATE INTERN CATEGORY
+POST http://localhost:8000/api/internCategory
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id":2,
+  "kategori":"Asistem Praktikum"
+}
+
+
+
+
+
+
+### LIST CATEGORY MAGANG
+GET http://localhost:8000/api/internCategory
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### EDIT CATEGORY MAGANG
+GET http://localhost:8000/api/internCategory/2
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### UPDATE INTERN CATEGORY
+PUT http://localhost:8000/api/internCategory/update/2
+Content-Type: application/json
+Accept: application/json
+
+{
+  "kategori":"Asisten Praktikum"
+}
+
+
+
+
+
+### DELETE INTERN CATEGORY
+DELETE http://localhost:8000/api/internCategory/1
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+### SEARCH INTERN CATEGORY
+GET http://localhost:8000/api/internCategory/search?kategori=a
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+### CREATE INCENTIVE UNIT
+POST http://localhost:8000/api/incentiveUnit
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id":4,
+  "satuan":"Tidur"
+}
+
+
+
+
+### LIST INCENTIVE UNIT
+GET http://localhost:8000/api/incentiveUnit
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+### UPDATE INCENTIVE UNIT
+PUT http://localhost:8000/api/incentiveUnit/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "satuan":"menit"
+}
+
+
+
+
+### DELETE INCENTIVE UNIT
+DELETE http://localhost:8000/api/incentiveUnit/1
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+### CREATE INCENTIVE
+POST http://localhost:8000/api/incentive
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id_kategori":2,
+  "id_satuan":1,
+  "besaran_insentif":50000,
+  "durasi_satuan":20
+}
+
+
+
+
+### LIST INCENTIVE
+GET http://localhost:8000/api/incentive
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+### EDIT INCENTIVE
+GET http://localhost:8000/api/incentive/2
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### READ INCENTIVE
+GET http://localhost:8000/api/incentive/get
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+### UPDATE INCENTIVE
+PUT http://localhost:8000/api/incentive/update/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id_kategori":2,
+  "id_satuan":2,
+  "besaran_insentif":100000,
+  "durasi_satuan": 20
+}
+
+
+
+
+### DELETE INCENTIVE
+DELETE http://localhost:8000/api/incentive/2
+Content-Type: application/json
+Accept: application/json
+
+
+
+### SEARCH INCENTIVE
+GET http://localhost:8000/api/incentive/search?
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+### CREATE TMST_USER
+POST http://localhost:8000/api/masterUser
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "105221013",
+  "nama": "Arya Ashari",
+  "username": "aryaashari",
+  "departemen": "Ilmu Komputer",
+  "no_telp": "08590000000",
+  "no_rekening": "1111111",
+  "status": "Mahasiswa"
+}
+
+
+
+
+
+
+### DELETE TMST_USER
+DELETE http://localhost:8000/api/masterUser/105221036
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### LIST TMST_USER
+GET http://localhost:8000/api/masterUser
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+### SHOW PIC TMST_USER
+GET http://localhost:8000/api/masterUser/showPic
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### UPDATE TMST_USER
+PUT http://localhost:8000/api/masterUser/sesuatu1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "nama": "Mufida Izzatul Hukmia",
+  "username": "mufzh",
+  "department": "FKH",
+  "no_telp": "085820165161",
+  "no_rekening": "20303003",
+  "status": "MAHASISWA"
+}
+
+
+
+
+
+
+### CREATE TMST_PROJECT
+POST http://localhost:8000/api/masterProject
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": 2,
+  "id_kategori": 2,
+  "nama": "tutor fisika",
+  "pic": "114053",
+  "tanggal_mulai": "2023-08-01",
+  "tanggal_selesai": "2023-10-01",
+  "estimasi": 12000000
+}
+
+
+
+
+### REMOVE TMST_PROJECT
+DELETE http://localhost:8000/api/masterProject/2
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+
+### LIST TMST_PROJECT
+GET http://localhost:8000/api/masterProject
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+
+
+### UPDATE TMST_PROJECT
+PUT http://localhost:8000/api/masterProject/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id_kategori": 1,
+  "nama": "Tutor Matematika",
+  "pic": "114053",
+  "tanggal_mulai": "2023-07-01",
+  "tanggal_selesai": "2023-10-01",
+  "estimasi": 1500000
+}
+
+
+
+
+
+
+
+### CREATE TRAN_PROJECT
+POST http://localhost:8000/api/project
+Content-Type: application/json
+Accept: application/json
+
+[
+  {
+    "id":1,
+    "id_project": 1,
+    "id_peserta": "105221036"
+  },
+  {
+    "id":2,
+    "id_project": 2,
+    "id_peserta": "105221014"
+  }
+]
+
+
+
+
+
+
+
+
+### CLICK NEW TIMESHEET (TRAN_PROJECT)
+GET http://localhost:8000/api/project/get
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+
+
+
+### REMOVE TRAN_PROJECT
+DELETE http://localhost:8000/api/project/7
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+
+
+### LIST TRAN_PROJECT
+GET http://localhost:8000/api/project
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+
+
+### PDF REPORTING
+GET http://localhost:8000/api/pdfReporting?project=Asisten Praktikum Dasar Pemrograman&bulan=8
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+### PDF GENERATING
+GET http://localhost:8000/api/submitPaymentPdf?project=Dasar Pemrograman&bulan=8
+Content-Type: application/json
+Accept: application/json
+
+
+### PDF GENERATING TIMESHEET
+GET http://localhost:8000/api/generatePdfTimesheet?id_pengguna=1042200004&bulan=8&project=Asisten Praktikum Algoritma dan Struktur Data&opsi=lihat
+Content-Type: application/json
+Accept: application/json
+
+
+### GET ALL PDF
+GET http://localhost:8000/api/generateAllPdf?id_pengguna=1042200004&bulan=8&project=Asisten Praktikum Algoritma dan Struktur Data&opsi=lihat
+Content-Type: application/json
+Accept: application/json
+
+
+### UPDATE TRAN_PROJECT
+PUT http://localhost:8000/api/project/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id_project": 2,
+  "id_peserta": "sesuatu"
+}
+
+
+
+
+
+
+### CREATE TRAN_TIMESHEET
+POST http://localhost:8000/api/timesheet
+Content-Type: application/json
+Accept: application/json
+
+[
+  {
+    "id_kategori_kegiatan": 1,
+    "id_tran_project": 1,
+    "tanggal": "2021-01-01",
+    "jam_mulai": "2021-01-01T16:50:00.000Z",
+    "jam_selesai": "2021-01-01T23:00:00.000Z",
+    "deskripsi": "Tes awal",
+    "total_sesi": 5
+  },
+  {
+    "id_kategori_kegiatan": 2,
+    "id_tran_project": 2,
+    "tanggal": "2021-02-01",
+    "jam_mulai": "2021-02-01T16:50:00.000Z",
+    "jam_selesai": "2021-02-01T23:00:00.000Z",
+    "deskripsi": "Tes akhir",
+    "total_sesi": 10
+  }
+
+]
+
+
+
+
+
+### DELETE TRAN_TIMESHEET
+DELETE http://localhost:8000/api/timesheet/20
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### LIST TRAN_TIMESHEET
+GET http://localhost:8000/api/timesheet
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+
+### SHOW EDIT TRAN_TIMESHEET
+GET http://localhost:8000/api/timesheet/edit/1
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### AVAILABLE STUDENT TRAN_TIMESHEET
+GET http://localhost:8000/api/timesheet/availableStudent?nama=f
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+
+### AVAILABLE STUDENT BY MONTH TRAN_TIMESHEET
+GET http://localhost:8000/api/timesheet/availableStudent/01
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+### CHECK AVAIBLE TRAN_TIMESHEET
+GET http://localhost:8000/api/timesheet/checkAvailable
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### SHOW TRAN_TIMESHEET
+GET http://localhost:8000/api/timesheet/show
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### UPDATE TRAN_TIMESHEET
+PUT http://localhost:8000/api/timesheet/2
+Content-Type: application/json
+Accept: application/json
+
+{
+  "jam_mulai": "2021-01-01T11:50:00.000Z",
+  "jam_selesai": "2021-01-01T23:00:00.000Z",
+  "deskripsi": "Tes awal 10",
+  "total_sesi":33
+}
+
+
+
+
+
+
+
+### CREATE TMST_ACTIVITY_CATEGORY
+POST http://localhost:8000/api/activity
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": 1,
+  "kegiatan": "Memanjat"
+}
+
+
+
+
+
+
+
+### DELETE TMST_ACTIVITY_CATEGORY
+DELETE http://localhost:8000/api/activity/2
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+
+### LIST TMST_ACTIVITY_CATEGORY
+GET http://localhost:8000/api/activity
+Content-Type: application/json
+Accept: application/json
+
+
+
+
+
+
+### UPDATE TMST_ACTIVITY_CATEGORY
+PUT http://localhost:8000/api/activity/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "kegiatan": "Memanjat Tebing"
+}
+
+
+###
+GET http://localhost:8000/api/staf/get
+Authorization: : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjExMjM0MSIsInVzZXJuYW1lIjoibC5sdWx1ayIsInJvbGUiOiJNQU5BR0VSIiwibmFtZSI6Ik1CQUsgTFVMVUsiLCJpYXQiOjE3MjkzMjcxOTQsImV4cCI6MTcyOTMyNzc5NH0.L3lltLwlWNAntrAq48LfljHQpIDeBxMrtjqgOx2riIw

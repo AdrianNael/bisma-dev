@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rekapitulasi Pekerja Paruh Waktu</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 10mm 10mm 35mm 10mm;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .page-wrapper {
+      width: 100%;
+    }
+
+    .page-container {
+      width: 100%;
+    }
+
+    /* Footer now handled by phantom footer in optionsRekap */
+    .header-section {
+      margin-bottom: 4mm;
+    }
+
+    .header-section table {
+      border-collapse: collapse;
+    }
+
+    .form-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 6mm 0;
+      line-height: 1.4;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+      margin-bottom: 6mm;
+      margin-top: 35mm;
+      font-family: 'Times New Roman', Times, serif;
+      border: 1px solid #000;
+    }
+
+
+    table.data-table th,
+    table.data-table td {
+      border: 1px solid #000;
+      padding: 3mm 2mm;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    table.data-table th {
+      background-color: #99CCFF;
+      font-weight: bold;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    table.data-table .col-no {
+      width: 26px;
+    }
+
+    table.data-table .col-nama {
+      width: 160px;
+      text-align: center;
+      padding-left: 3mm;
+    }
+
+    table.data-table .col-nim {
+      width: 90px;
+    }
+
+    table.data-table .col-date {
+      width: 36px;
+    }
+
+    table.data-table .col-total-menit {
+      width: 60px;
+    }
+
+    table.data-table .col-total-sesi {
+      width: 60px;
+    }
+
+    table.data-table .col-total-insentif {
+      width: 90px;
+      text-align: center;
+      padding-right: 3mm;
+    }
+
+    table.data-table .total-row {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 5mm;
+      margin-top: 2mm;
+      margin-bottom: 0mm;
+      font-size: 17px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .signature-section .signature-box {
+      width: 45%;
+      margin-left: 760px;
+      text-align: left;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .signature-image-wrapper {
+      height: 70px;
+      display: flex;
+      align-items: left;
+      justify-content: left;
+      margin-top: 5mm;
+      margin-bottom: 10mm;
+    }
+
+    .signature-placeholder {
+      height: 100px;
+      border: 1px dashed #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 5mm auto;
+      width: 250px;
+      color: #999;
+      font-weight: bold;
+    }
+
+    .signature-section p {
+      margin: 1mm 0;
+    }
+
+    .signature-space {
+      height: 30mm;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <% if (result && result.footerImgSrc) { %>
+      <!-- Preload footer image so PhantomJS can reuse it in the footer context -->
+      <img src="<%= result.footerImgSrc %>" alt=""
+        style="display:block;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;" />
+      <% } %>
+        <% if (result.data.error) { %>
+          <div class="page-container">
+            <h3 style="text-align: center; margin-top: 50mm;"><i>
+                <%= result.data.error %>
+              </i></h3>
+          </div>
+          <% } else if (result.data && result.data.length> 0) { %>
+            <div class="page-container">
+              <table class="data-table">
+                <thead>
+                  <% const monthGroups={}; if (result.sortedDates && result.sortedDates.length> 0) {
+                    result.sortedDates.forEach(dateStr => {
+                    const date = new Date(dateStr);
+                    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    const monthYear = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+                    if (!monthGroups[monthYear]) {
+                    monthGroups[monthYear] = [];
+                    }
+                    monthGroups[monthYear].push({
+                    fullDate: dateStr,
+                    day: date.getDate()
+                    });
+                    });
+                    }
+                    %>
+                    <tr>
+                      <th class="col-no" rowspan="2">NO</th>
+                      <th class="col-nama" rowspan="2">NAMA<br>MAHASISWA</th>
+                      <th class="col-nim" rowspan="2">NIM</th>
+                      <% Object.keys(monthGroups).forEach((monthYear, index)=> { %>
+                        <th class="<%= index === 0 ? 'first-month' : '' %>"
+                          colspan="<%= monthGroups[monthYear].length %>">
+                          <%= monthYear %>
+                        </th>
+                        <% }); %>
+                          <th class="col-total-menit" rowspan="2">TOTAL<br>MENIT</th>
+                          <th class="col-total-sesi" rowspan="2">TOTAL<br>SESI</th>
+                          <th class="col-total-insentif" rowspan="2">TOTAL<br>INSENTIF</th>
+                    </tr>
+                    <tr>
+                      <% Object.keys(monthGroups).forEach((monthYear, monthIndex)=> { %>
+                        <% monthGroups[monthYear].forEach((dateInfo, dateIndex)=> { %>
+                          <th class="col-date">
+                            <%= dateInfo.day %>
+                          </th>
+                          <% }); %>
+                            <% }); %>
+                    </tr>
+                </thead>
+                <tbody>
+                  <% result.data.forEach((mhs, index)=> { %>
+                    <tr>
+                      <td class="col-no">
+                        <%= mhs.no %>
+                      </td>
+                      <td class="col-nama">
+                        <%= mhs.nama %>
+                      </td>
+                      <td class="col-nim">
+                        <%= mhs.nim %>
+                      </td>
+                      <% if (result.sortedDates && result.sortedDates.length> 0) { %>
+                        <% result.sortedDates.forEach((date, dateIndex)=> { %>
+                          <% const minutes=mhs.dateMap[date] || 0; %>
+                            <% /* Calculate jam (hours) from minutes */ %>
+                                <% const jam=minutes / 60; %>
+                                  <% let jamStr='-' ; if (minutes> 0) {
+                                    const rounded = Math.round(jam * 100) / 100;
+                                    const fixed = rounded.toFixed(2);
+                                    if (fixed.endsWith('.00')) {
+                                    jamStr = String(Math.round(rounded));
+                                    } else {
+                                    jamStr = fixed.replace('.', ',');
+                                    }
+                                    }
+                                    %>
+                                    <td class="col-date <%= dateIndex === 0 ? 'first-month' : '' %>">
+                                      <%= jamStr %>
+                                    </td>
+                                    <% }); %>
+                                      <% } %>
+                                        <% const menitVal=(typeof mhs.total_menit !=='undefined' ) ?
+                                          Number(mhs.total_menit) : 0; %>
+                                          <% const menitStr=menitVal.toFixed(0); %>
+                                            <td class="col-total-menit">
+                                              <%= menitStr %>
+                                            </td>
+                                            <% /* Use pre-calculated total_sesi_jam from service which already accounts
+                                              for durasi_satuan per category. Remove trailing .0 for display */ %>
+                                              <% const sesiJamRaw = Number(mhs.total_sesi_jam);
+                                                const sesiJamFixed = (Math.round(sesiJamRaw * 100) / 100).toFixed(2);
+                                                const formattedSesiJam = sesiJamFixed.endsWith('.00')
+                                                  ? String(Math.round(sesiJamRaw))
+                                                  : sesiJamFixed.replace('.', ','); %>
+                                                <td class="col-total-sesi">
+                                                  <%= formattedSesiJam %>
+                                                </td>
+                                                <td class="col-total-insentif">Rp<%=
+                                                    mhs.total_insentif.toLocaleString('id-ID') %>
+                                                </td>
+                    </tr>
+                    <% }); %>
+                      <tr class="total-row">
+                        <td colspan="<%= 3 + (result.sortedDates ? result.sortedDates.length : 0) %>">TOTAL</td>
+                        <% const totalMenitVal=(typeof result.total.total_menit !=='undefined' ) ?
+                          Number(result.total.total_menit) : 0; %>
+                          <% const totalMenitStr=totalMenitVal.toFixed(0); %>
+                            <td class="col-total-menit">
+                              <%= totalMenitStr %>
+                            </td>
+                            <% /* Use pre-calculated total_sesi from service which already accounts for durasi_satuan
+                              per category */ %>
+                              <% const totalSesiVal=result.total.total_sesi || 0; %>
+                                <% const totalSesiRounded=Math.round(totalSesiVal * 100) / 100; %>
+                                  <% const totalSesiFixed=totalSesiRounded.toFixed(2); %>
+                                    <% const totalSesiStr=totalSesiFixed.endsWith('.00') ?
+                                      String(Math.round(totalSesiRounded)) : totalSesiFixed.replace('.', ',' ); %>
+                                      <td class="col-total-sesi">
+                                        <%= totalSesiStr %>
+                                      </td>
+                                      <td class="col-total-insentif">Rp<%=
+                                          result.total.total_insentif.toLocaleString('id-ID') %>
+                                      </td>
+                      </tr>
+                </tbody>
+              </table>
+              <div class="signature-section">
+                <div></div>
+                <div class="signature-box">
+                  <p style="margin: 0 0 2mm 0; font-size: 16px;">Mengetahui,</p>
+                  <p style="margin: 0 0 3mm 0; font-size: 16px; font-weight: bold;">
+                    <%= jabatan || 'Dosen Pembimbing' %>
+                  </p>
+
+                  <% if (result.signatures && result.signatures.lecturer) { %>
+                    <div class="signature-image-wrapper">
+                      <img src="<%= result.signatures.lecturer %>" alt="Lecturer Signature"
+                        style="max-height: 100px; max-width: 250px; margin-left: -50px;" />
+                    </div>
+                    <% } else { %>
+                      <div class="signature-placeholder">
+                        (Tanda Tangan)
+                      </div>
+                      <% } %>
+
+                        <p style="margin: 0; font-weight: bold; font-size: 16px;">
+                          <%= (result.lecturer && result.lecturer.nama) ? result.lecturer.nama : '-' %>
+                        </p>
+                        <% const lecturerId=(result.lecturer && result.lecturer.id) ? result.lecturer.id : null; const
+                          lecturerStatus=(result.lecturer && result.lecturer.status) ? result.lecturer.status : null; %>
+                          <% if (lecturerStatus==='STAF' && lecturerId) { %>
+                            <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">NIP. <%= lecturerId %>
+                            </p>
+                            <% } else if (lecturerId) { %>
+                              <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">
+                                <%= lecturerId %>
+                              </p>
+                              <% } %>
+                </div>
+              </div>
+            </div>
+            <% } else { %>
+              <div class="page-container">
+                <h2 style="text-align: center; margin-top: 50mm;"><i>DATA TIDAK DITEMUKAN!</i></h2>
+              </div>
+              <% } %>
+  </div>
+</body>
+
+</html>

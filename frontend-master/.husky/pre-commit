@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Default: cek file yang di-stage (lint-staged)
+# Set CHECK_ALL=1 saat commit untuk cek semua file
+
+if [ "$CHECK_ALL" = "1" ]; then
+  echo "🔍 Running FULL repo checks..."
+  npm run check:all
+else
+  echo "🔍 Running STAGED-file checks (lint-staged)..."
+  npm run check:staged
+fi

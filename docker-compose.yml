@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: bisma_mysql
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "bisma"
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend-master
+    container_name: bisma_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql://root:@mysql:3306/bisma
+      - BACKEND_URL=http://localhost:8000
+      - JWT_SECRET=t0Kl8jTgZFgMmO64cZAvug8FTfVHFI8izhpjhuUm1ya0XYWM9kIpqi6q8id5rvL
+      - PORT=8000
+      - JWT_REFRESH_TOKEN=pqvFK4ApAaWGkRdgPR1ZAUepwp1Z4TL6jpM9ZyNL0RCe90DHaZ8UnXYG8q12
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./backend-master:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./frontend-master
+    container_name: bisma_frontend
+    restart: always
+    ports:
+      - "3003:3003"
+    environment:
+      - NEXT_PUBLIC_API_ENDPOINT=http://localhost:8000
+      - PORT=3003
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend-master:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  db_data:

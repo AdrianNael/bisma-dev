@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rekapitulasi Pekerja Paruh Waktu - Karya</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 10mm 10mm 35mm 10mm;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .page-wrapper {
+      width: 100%;
+    }
+
+    .page-container {
+      width: 100%;
+    }
+
+    /* Footer now handled by phantom footer in optionsRekap */
+    .header-section {
+      margin-bottom: 4mm;
+    }
+
+    .header-section table {
+      border-collapse: collapse;
+    }
+
+    .form-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 6mm 0;
+      line-height: 1.4;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+      margin-bottom: 6mm;
+      margin-top: 35mm;
+      font-family: 'Times New Roman', Times, serif;
+      border: 1px solid #000;
+    }
+
+
+    table.data-table th,
+    table.data-table td {
+      border: 1px solid #000;
+      padding: 3mm 2mm;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    table.data-table th {
+      background-color: #99CCFF;
+      font-weight: bold;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    table.data-table .col-no {
+      width: 26px;
+    }
+
+    table.data-table .col-nama {
+      width: 160px;
+      text-align: center;
+      padding-left: 3mm;
+    }
+
+    table.data-table .col-nim {
+      width: 90px;
+    }
+
+    table.data-table .col-date {
+      width: 36px;
+    }
+
+    table.data-table .col-total-design {
+      width: 80px;
+    }
+
+    table.data-table .col-total-insentif {
+      width: 100px;
+      text-align: center;
+      padding-right: 3mm;
+    }
+
+    table.data-table .total-row {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 5mm;
+      margin-top: 2mm;
+      margin-bottom: 0mm;
+      font-size: 17px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .signature-section .signature-box {
+      width: 45%;
+      margin-left: 760px;
+      text-align: left;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .signature-image-wrapper {
+      height: 70px;
+      display: flex;
+      align-items: left;
+      justify-content: left;
+      margin-top: 5mm;
+      margin-bottom: 10mm;
+      margin-left: -10px;
+    }
+
+    .signature-placeholder {
+      height: 100px;
+      border: 1px dashed #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 5mm auto;
+      width: 250px;
+      color: #999;
+      font-weight: bold;
+    }
+
+    .signature-section p {
+      margin: 1mm 0;
+    }
+
+    .signature-space {
+      height: 30mm;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <% if (result && result.footerImgSrc) { %>
+      <!-- Preload footer image so PhantomJS can reuse it in the footer context -->
+      <img src="<%= result.footerImgSrc %>" alt=""
+        style="display:block;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;" />
+      <% } %>
+        <% if (result.data.error) { %>
+          <div class="page-container">
+            <h3 style="text-align: center; margin-top: 50mm;"><i>
+                <%= result.data.error %>
+              </i></h3>
+          </div>
+          <% } else if (result.data && result.data.length> 0) { %>
+            <div class="page-container">
+              <!-- <div class="header-section">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                  <tr>
+                    <td
+                      style="width: 180px; padding: 6px; text-align: center; vertical-align: top; border-right: 1px solid #000;">
+                      <% if (result.logoBase64) { %>
+                        <img src="<%= result.logoBase64 %>" alt="Logo Pertamina"
+                          style="width: 170px; height: auto; display: block; margin: 0 auto;" />
+                        <% } else { %>
+                          <div
+                            style="width: 90px; height: 90px; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 8px; margin: 0 auto;">
+                            Logo</div>
+                          <% } %>
+                    </td>
+                    <td colspan="4" style="padding: 6px 8px; vertical-align: top; border-bottom: 1px solid #000;">
+                      <h2
+                        style="font-size: 19px; font-weight: bold; margin: 0 0 2px 0; font-family: 'Times New Roman', Times, serif;">
+                        UNIVERSITAS PERTAMINA</h2>
+                      <p
+                        style="font-size: 16px; line-height: 1.2; margin: 0 0 2px 0; font-family: 'Times New Roman', Times, serif;">
+                        Jalan Teuku Nyak Arief, Simprug,</p>
+                      <p
+                        style="font-size: 16px; line-height: 1.2; margin: 0 0 2px 0; font-family: 'Times New Roman', Times, serif;">
+                        Kebayoran Lama, Jakarta Selatan, 12220</p>
+                      <p
+                        style="font-size: 16px; line-height: 1.2; margin: 0; font-family: 'Times New Roman', Times, serif;">
+                        Telp. (021) 5085 7540</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2"
+                      style="padding: 6px; text-align: center; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif;">
+                      <strong>FORMULIR</strong>
+                    </td>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif;">
+                      <strong>KODE</strong>
+                    </td>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif; width: 380px;">
+                      &nbsp;&nbsp;&nbsp;<span style="background-color: yellow;">DIISI OLEH
+                        SPM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif;">
+                      <strong>TGL. BERLAKU</strong>
+                    </td>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif; width: 380px;">
+                      &nbsp;&nbsp;&nbsp;<span style="background-color: yellow;">DIISI OLEH
+                        SPM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif;">
+                      <strong>REVISI KE-</strong>
+                    </td>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif; width: 380px;">
+                      &nbsp;&nbsp;&nbsp;00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif;">
+                      <strong>TGL. REVISI</strong>
+                    </td>
+                    <td
+                      style="padding: 4px; text-align: left; vertical-align: middle; border: 1px solid #000; font-size: 19px; font-family: 'Times New Roman', Times, serif; width: 380px;">
+                      &nbsp;&nbsp;&nbsp;<span style="background-color: yellow;">DIISI OLEH
+                        SPM</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5"
+                      style="padding: 3mm; text-align: center; vertical-align: middle; border-top: 1px solid #000; font-family: 'Times New Roman', Times, serif;">
+                      <div style="font-weight: bold; font-size: 20px;">FORMULIR<br>REKAPITULASI PEKERJA PARUH WAKTU
+                        DESAIN
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div> -->
+              <table class="data-table">
+                <thead>
+                  <% const monthNames=['Januari', 'Februari' , 'Maret' , 'April' , 'Mei' , 'Juni' , 'Juli' , 'Agustus'
+                    , 'September' , 'Oktober' , 'November' , 'Desember' ]; function formatFullDate(dateStr) { const
+                    date=new Date(dateStr); return `${date.getDate()} ${monthNames[date.getMonth()]}
+                    ${date.getFullYear()}`; } %>
+                    <tr>
+                      <th class="col-no">NO</th>
+                      <th class="col-nama">NAMA<br>MAHASISWA</th>
+                      <th class="col-nim">NIM</th>
+                      <% if (result.sortedDates && result.sortedDates.length> 0) { %>
+                        <% result.sortedDates.forEach((dateStr, index)=> { %>
+                          <th class="col-date">
+                            <%= formatFullDate(dateStr) %>
+                          </th>
+                          <% }); %>
+                            <% } %>
+                              <th class="col-total-design">TOTAL<br>DESAIN</th>
+                              <th class="col-total-insentif">TOTAL<br>INSENTIF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  <% result.data.forEach((mhs, index)=> { %>
+                    <tr>
+                      <td class="col-no">
+                        <%= mhs.no %>
+                      </td>
+                      <td class="col-nama">
+                        <%= mhs.nama %>
+                      </td>
+                      <td class="col-nim">
+                        <%= mhs.nim %>
+                      </td>
+                      <% let rowTotalDesign=0; if (result.sortedDates && result.sortedDates.length> 0) {
+                        result.sortedDates.forEach((date) => {
+                        rowTotalDesign += (mhs.dateMap[date] || 0);
+                        });
+                        }
+                        %>
+                        <% if (result.sortedDates && result.sortedDates.length> 0) { %>
+                          <% result.sortedDates.forEach((date, dateIndex)=> { %>
+                            <% const designCount=mhs.dateMap[date] || 0; %>
+                              <% const designStr=designCount> 0 ? String(designCount) : '-'; %>
+                                <td class="col-date <%= dateIndex === 0 ? 'first-month' : '' %>">
+                                  <%= designStr %>
+                                </td>
+                                <% }); %>
+                                  <% } %>
+                                    <td class="col-total-design">
+                                      <%= rowTotalDesign %>
+                                    </td>
+                                    <td class="col-total-insentif">Rp<%= mhs.total_insentif.toLocaleString('id-ID') %>
+                                    </td>
+                    </tr>
+                    <% }); %>
+                      <tr class="total-row">
+                        <td colspan="<%= 3 + (result.sortedDates ? result.sortedDates.length : 0) %>">TOTAL</td>
+                        <% let grandTotalDesign=0; if (result.data && result.sortedDates) { result.data.forEach((mhs)=>
+                          {
+                          result.sortedDates.forEach((date) => {
+                          grandTotalDesign += (mhs.dateMap[date] || 0);
+                          });
+                          });
+                          }
+                          %>
+                          <td class="col-total-design">
+                            <%= grandTotalDesign %> Desain
+                          </td>
+                          <td class="col-total-insentif">Rp<%= result.total.total_insentif.toLocaleString('id-ID') %>
+                          </td>
+                      </tr>
+                </tbody>
+              </table>
+              <div class="signature-section">
+                <div></div>
+                <div class="signature-box">
+                  <p style="margin: 0 0 2mm 0; font-size: 16px;">Mengetahui,</p>
+                  <p style="margin: 0 0 3mm 0; font-size: 16px; font-weight: bold;">
+                    <%= jabatan || 'Dosen Pembimbing' %>
+                  </p>
+
+                  <% if (result.signatures && result.signatures.lecturer) { %>
+                    <div class="signature-image-wrapper">
+                      <img src="<%= result.signatures.lecturer %>" alt="Lecturer Signature"
+                        style="max-height: 100px; max-width: 250px; margin-left: -50px;" />
+                    </div>
+                    <% } else { %>
+                      <div class="signature-placeholder">
+                        (Tanda Tangan)
+                      </div>
+                      <% } %>
+
+                        <p style="margin: 0; font-weight: bold; font-size: 16px;">
+                          <%= (result.lecturer && result.lecturer.nama) ? result.lecturer.nama : '-' %>
+                        </p>
+                        <% const lecturerId=(result.lecturer && result.lecturer.id) ? result.lecturer.id : null; const
+                          lecturerStatus=(result.lecturer && result.lecturer.status) ? result.lecturer.status : null; %>
+                          <% if (lecturerStatus==='STAF' && lecturerId) { %>
+                            <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">NIP. <%= lecturerId %>
+                            </p>
+                            <% } else if (lecturerId) { %>
+                              <p style="margin: 2mm 0 0 0; font-size: 16px; font-weight: bold;">
+                                <%= lecturerId %>
+                              </p>
+                              <% } %>
+                </div>
+              </div>
+            </div>
+            <% } else { %>
+              <div class="page-container">
+                <h2 style="text-align: center; margin-top: 50mm;"><i>DATA TIDAK DITEMUKAN!</i></h2>
+              </div>
+              <% } %>
+  </div>
+</body>
+
+</html>
