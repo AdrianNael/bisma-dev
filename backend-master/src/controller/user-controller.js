@@ -30,7 +30,6 @@ const login = async (req, res, next) => {
     res.cookie('refreshToken', result.refresh_token, {
       httpOnly: true,
       maxAge: 2 * 60 * 60 * 1000,
-      domain: 'localhost',
       secure: true,
       sameSite: 'None',
     });
@@ -116,7 +115,6 @@ const logout = async (req, res, next) => {
     // Continue to clear cookie regardless of service error
   } finally {
     res.clearCookie('refreshToken', {
-      domain: 'localhost',
       path: '/',
       secure: true,
       sameSite: 'None',
