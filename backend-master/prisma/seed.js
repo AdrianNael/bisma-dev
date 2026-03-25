@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { users, user_positions, timesheets, timesheets_status, payments, payments_status, incentives, incentives_unit, positions, master_users, master_projects, projects, activities, categories, tmst_status_project, project_history, timesheet_history, payment_history, tmst_department, student_timesheet_status } from "./datas.js";
+import { users, user_positions, timesheets, timesheets_status, payments, payments_status, incentives, incentives_unit, positions, master_users, master_projects, projects, activities, categories, tmst_status_project, project_history, timesheet_history, payment_history, tmst_department, student_timesheet_status, tmst_status_master_project } from "./datas.js";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -42,6 +42,12 @@ async function main() {
 
   for (let data of tmst_status_project) {
     await prisma.tmst_status_project.create({
+      data: data,
+    });
+  }
+
+  for (let data of tmst_status_master_project) {
+    await prisma.tmst_status_master_project.create({
       data: data,
     });
   }

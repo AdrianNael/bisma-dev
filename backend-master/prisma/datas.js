@@ -723,4 +723,17 @@ const student_timesheet_status = [
   }
 ]
 
-export { users, user_positions, timesheets, timesheets_status, payments, payments_status, incentives, incentives_unit, positions, master_users, master_projects, projects, activities, categories, tmst_status_project, project_history, timesheet_history, payment_history, tmst_department, student_timesheet_status };
+const tmst_status_master_project = [
+  {
+    id: 1,
+    status: "Aktif",
+    deskripsi: "Project sedang berjalan"
+  },
+  {
+    id: 2,
+    status: "Selesai",
+    deskripsi: "Project telah selesai"
+  }
+]
+
+export { users, user_positions, timesheets, timesheets_status, payments, payments_status, incentives, incentives_unit, positions, master_users, master_projects, projects, activities, categories, tmst_status_project, project_history, timesheet_history, payment_history, tmst_department, student_timesheet_status, tmst_status_master_project };
