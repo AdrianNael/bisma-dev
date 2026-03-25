@@ -3,21 +3,31 @@ import { users, user_positions, timesheets, timesheets_status, payments, payment
 const prisma = new PrismaClient();
 
 async function main() {
+  // Cleanup existing data in correct reverse-dependency order
+  await prisma.project_status_history.deleteMany();
+  await prisma.timesheet_status_history.deleteMany();
+  await prisma.payment_status_history.deleteMany();
   await prisma.tran_timesheet.deleteMany();
   await prisma.tran_payment.deleteMany();
+  await prisma.job_application.deleteMany();
+  await prisma.tmst_project_department.deleteMany();
+  await prisma.tmst_project_faculty.deleteMany();
   await prisma.tran_project.deleteMany();
   await prisma.tmst_project.deleteMany();
-  await prisma.tmst_status_master_project.deleteMany();
-  await prisma.tmst_status_project.deleteMany();
+  await prisma.tran_insentif.deleteMany();
+  await prisma.tran_posisi_pengguna.deleteMany();
   await prisma.tmst_pengguna.deleteMany();
-  await prisma.tmst_department.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.tmst_department.deleteMany();
+  await prisma.tmst_faculty.deleteMany();
   await prisma.tmst_kategori_magang.deleteMany();
   await prisma.tmst_satuan_insentif.deleteMany();
   await prisma.tmst_posisi.deleteMany();
-  await prisma.tmst_status_pembayaran.deleteMany();
   await prisma.tmst_status_timesheet.deleteMany();
+  await prisma.tmst_status_pembayaran.deleteMany();
   await prisma.tmst_kategori_kegiatan.deleteMany();
+  await prisma.tmst_status_project.deleteMany();
+  await prisma.tmst_status_master_project.deleteMany();
   await prisma.tmst_status_student_timesheet.deleteMany();
 
   for (let data of master_users) {
