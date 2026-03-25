@@ -3,6 +3,23 @@ import { users, user_positions, timesheets, timesheets_status, payments, payment
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.tran_timesheet.deleteMany();
+  await prisma.tran_payment.deleteMany();
+  await prisma.tran_project.deleteMany();
+  await prisma.tmst_project.deleteMany();
+  await prisma.tmst_status_master_project.deleteMany();
+  await prisma.tmst_status_project.deleteMany();
+  await prisma.tmst_pengguna.deleteMany();
+  await prisma.tmst_department.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.tmst_kategori_magang.deleteMany();
+  await prisma.tmst_satuan_insentif.deleteMany();
+  await prisma.tmst_posisi.deleteMany();
+  await prisma.tmst_status_pembayaran.deleteMany();
+  await prisma.tmst_status_timesheet.deleteMany();
+  await prisma.tmst_kategori_kegiatan.deleteMany();
+  await prisma.tmst_status_student_timesheet.deleteMany();
+
   for (let data of master_users) {
     await prisma.user.create({
       data: data,
