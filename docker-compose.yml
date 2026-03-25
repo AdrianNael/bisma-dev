@@ -38,7 +38,10 @@ services:
       - /app/node_modules
 
   frontend:
-    build: ./frontend-master
+    build:
+      context: ./frontend-master
+      args:
+        - NEXT_PUBLIC_API_ENDPOINT=https://bismadev.universitaspertamina.ac.id/api
     container_name: bisma_frontend
     restart: always
     ports:
