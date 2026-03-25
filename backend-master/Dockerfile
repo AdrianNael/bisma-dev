@@ -21,4 +21,4 @@ RUN npx prisma generate
 EXPOSE 8000
 
 # Push DB schema before starting the app to ensure DB is ready
-CMD ["sh", "-c", "npx prisma db push && npm run dev"]
+CMD ["sh", "-c", "npx prisma db push && node src/main.js"]
